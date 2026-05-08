@@ -4,10 +4,12 @@ CREATE TABLE empleados (
     activo BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE TABLE procesos (
 	id SERIAL PRIMARY KEY,
 	nombre VARCHAR(100) NOT NULL
 );
+
 CREATE TABLE ordenes_produccion (
     id SERIAL PRIMARY KEY,
     numero_op VARCHAR(50) NOT NULL,
@@ -17,6 +19,7 @@ CREATE TABLE ordenes_produccion (
     fecha_entrega DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE TABLE registros_produccion (
     id SERIAL PRIMARY KEY,
 
@@ -43,3 +46,27 @@ CREATE TABLE registros_produccion (
         FOREIGN KEY(proceso_id)
         REFERENCES procesos(id)
 );
+
+CREATE TABLE corte_laser_detalle (
+	id SERIAL PRIMARY KEY,
+	registro_produccion_id INTEGER UNIQUE NOT NULL,
+	cantidad_lamina DECIMAL(10,2),
+	minutor_corte INTEGER,
+
+	CONSTRAINT fk_registro_corte
+		FOREIGN KEY(registro_produccion_id)
+		REFERENCES registros_produccion(id)
+);
+
+CREATE TABLE pintura_detalle (
+    id SERIAL PRIMARY KEY,
+
+    registro_produccion_id INTEGER UNIQUE NOT NULL,
+
+    color VARCHAR(50),
+
+    CONSTRAINT fk_registro_pintura
+        FOREIGN KEY(registro_produccion_id)
+        REFERENCES registros_produccion(id)
+);
+
