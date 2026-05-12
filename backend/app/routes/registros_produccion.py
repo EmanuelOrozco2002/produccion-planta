@@ -9,6 +9,10 @@ from app.schemas.registro_produccion import (
     RegistroProduccionCreate
 )
 
+from app.schemas.registro_produccion import (
+    RegistroProduccionResponse
+)
+
 router = APIRouter()
 
 
@@ -49,3 +53,17 @@ def crear_registro_produccion(
     db.refresh(nuevo_registro)
 
     return nuevo_registro
+
+@router.get(
+    "/registros-produccion",
+    response_model=list[RegistroProduccionResponse]
+)
+def obtener_registros_produccion(
+    db: Session = Depends(get_db)
+):
+
+    registros = db.query(
+        RegistroProduccion
+    ).all()
+
+    return registros
