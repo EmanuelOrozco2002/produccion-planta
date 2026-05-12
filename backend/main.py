@@ -1,20 +1,25 @@
-from fastapi import FastAPI, Depends
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 
-from app.deps import get_db
-from app.models.empleado import Empleado
+from app.routes import empleados
+from app.routes import registros_produccion
+
+from app.models.proceso import Proceso
+from app.models.orden_produccion import OrdenProduccion
+
 
 app = FastAPI()
 
 
+app.include_router(empleados.router)
+
+app.include_router(
+    registros_produccion.router
+)
+
+
 @app.get("/")
-def home():
-    return {"message": "Sistema Produccion Planta funcionando"}
+def root():
 
-
-@app.get("/empleados")
-def obtener_empleados(db: Session = Depends(get_db)):
-
-    empleados = db.query(Empleado).all()
-
-    return empleados
+    return {
+        "message": "Sistema Produccion Planta funcionando"
+    }
