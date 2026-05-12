@@ -1,22 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.database import SessionLocal
 from app.models.empleado import Empleado
 from app.schemas.empleado import EmpleadoCreate
-
+from app.deps import get_db
 
 router = APIRouter()
-
-
-def get_db():
-    db = SessionLocal()
-
-    try:
-        yield db
-
-    finally:
-        db.close()
-
 
 @router.get("/empleados")
 def obtener_empleados(
@@ -27,6 +15,14 @@ def obtener_empleados(
 
     return empleados
 
+@router.get("/empleados/{empleado_id}")
+def obtener_empleado(
+    empleado_id: int,
+    db: Session = Depends(get_db)
+):
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+
+    return empleado
 
 @router.post("/empleados")
 def crear_empleado(

@@ -1,31 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-
-from app.database import SessionLocal
-
+from app.deps import get_db
 from app.models.registro_produccion import RegistroProduccion
-
 from app.schemas.registro_produccion import (
     RegistroProduccionCreate
 )
-
 from app.schemas.registro_produccion import (
     RegistroProduccionResponse
 )
-
 router = APIRouter()
-
-
-def get_db():
-
-    db = SessionLocal()
-
-    try:
-        yield db
-
-    finally:
-        db.close()
-
 
 @router.post("/registros-produccion")
 def crear_registro_produccion(
