@@ -3,7 +3,8 @@ from pydantic import BaseModel
 
 class EmpleadoCreate(BaseModel):
     nombre: str
-    
+
+
 class EmpleadoResponse(BaseModel):
 
     id: int
@@ -15,3 +16,8 @@ class EmpleadoResponse(BaseModel):
     class Config:
 
         from_attributes = True
+
+
+class EmpleadoUpdate(BaseModel):
+    nombre: str
+    activo: bool
