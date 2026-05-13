@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.models.empleado import Empleado
-from app.schemas.empleado import EmpleadoCreate, EmpleadoUpdate
+from app.schemas.empleado import EmpleadoCreate, EmpleadoUpdate, EmpleadoResponse
 from app.deps import get_db
 
 router = APIRouter()
@@ -15,7 +15,7 @@ def obtener_empleados(db: Session = Depends(get_db)):
     return empleados
 
 
-@router.get("/empleados/{empleado_id}")
+@router.get("/empleados/{empleado_id}", response_model=EmpleadoResponse)
 def obtener_empleado(empleado_id: int, db: Session = Depends(get_db)):
     empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
     if empleado is None:
