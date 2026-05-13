@@ -9,5 +9,5 @@ class Empleado(Base):
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, nullable=False)
     activo = Column(Boolean, default=True)
-    
+
     registros_produccion = relationship("RegistroProduccion", back_populates="empleado")

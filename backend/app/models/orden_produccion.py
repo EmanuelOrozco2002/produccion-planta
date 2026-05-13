@@ -7,13 +7,6 @@ class OrdenProduccion(Base):
 
     __tablename__ = "ordenes_produccion"
 
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True
-    )
+    id = Column(Integer, primary_key=True, index=True)
 
-    codigo = Column(
-        String,
-        nullable=False
-    )
+    codigo = Column(String, nullable=False)

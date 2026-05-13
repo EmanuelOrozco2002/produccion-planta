@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from app.schemas.empleado import EmpleadoResponse
 
+
 class RegistroProduccionCreate(BaseModel):
 
     empleado_id: int
@@ -13,6 +14,7 @@ class RegistroProduccionCreate(BaseModel):
     hora_inicio: datetime
 
     hora_fin: datetime
+
 
 class RegistroProduccionResponse(BaseModel):
 
