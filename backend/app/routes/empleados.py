@@ -8,9 +8,29 @@ router = APIRouter()
 
 
 @router.get("/empleados")
-def obtener_empleados(db: Session = Depends(get_db)):
-
-    empleados = db.query(Empleado).all()
+def obtener_empleados(
+    activo: bool | None = None,
+    nombre: str | None = None,
+    orden: str | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
+    db: Session = Depends(get_db),
+):
+    empleados = db.query(Empleado)
+    if activo is not None:
+        empleados = empleados.filter(Empleado.activo == activo)
+    if nombre is not None:
+        empleados = empleados.filter(Empleado.nombre.like(f"%{nombre}%"))
+    if orden is not None:
+        if orden == "nombre":
+            empleados = empleados.order_by(Empleado.nombre)
+        elif orden == "id":
+            empleados = empleados.order_by(Empleado.id)
+    if limit is not None:
+        empleados = empleados.limit(limit)
+    if offset is not None:
+        empleados = empleados.offset(offset)
+    empleados = empleados.all()
 
     return empleados
 
