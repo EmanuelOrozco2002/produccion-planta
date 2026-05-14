@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from app.schemas.registro_produccion import RegistroProduccionResponse
 from typing import List
 
 
 class EmpleadoCreate(BaseModel):
-    nombre: str
+    nombre: str = Field(min_length=3, max_length=50)
 
 
 class EmpleadoResponse(BaseModel):
