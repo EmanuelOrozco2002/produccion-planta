@@ -7,7 +7,13 @@ from app.deps import get_db
 router = APIRouter()
 
 
-@router.get("/empleados")
+# funcion reutilizable para obtener un empleado por identificador
+def obtener_empleado_por_id(db: Session, empleado_id: int):
+    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    return empleado
+
+
+@router.get("/empleados", response_model=list[EmpleadoResponse])
 def obtener_empleados(
     activo: bool | None = None,
     nombre: str | None = None,
@@ -16,20 +22,40 @@ def obtener_empleados(
     offset: int | None = None,
     db: Session = Depends(get_db),
 ):
+
+    # Query base de empleados
     empleados = db.query(Empleado)
+
+    # Filtrar por estado activo/inactivo
     if activo is not None:
         empleados = empleados.filter(Empleado.activo == activo)
+
+    # Buscar empleados por coincidencia parcial en nombre
     if nombre is not None:
         empleados = empleados.filter(Empleado.nombre.like(f"%{nombre}%"))
+
+    # Aplicar ordenamiento dinamico
     if orden is not None:
+        # Ordenar por nombre
         if orden == "nombre":
             empleados = empleados.order_by(Empleado.nombre)
+
+        # Ordenar por id
         elif orden == "id":
             empleados = empleados.order_by(Empleado.id)
+            # validar campos de ordenamiento permitidos
+        else:
+            raise HTTPException(status_code=400, detail="Orden no permitido")
+
+    # Limitar cantidad de resultados
     if limit is not None:
         empleados = empleados.limit(limit)
+
+    # Saltar cierta cantidad de registros
     if offset is not None:
         empleados = empleados.offset(offset)
+
+    # Ejecutar query SQL
     empleados = empleados.all()
 
     return empleados
@@ -37,7 +63,7 @@ def obtener_empleados(
 
 @router.get("/empleados/{empleado_id}", response_model=EmpleadoResponse)
 def obtener_empleado(empleado_id: int, db: Session = Depends(get_db)):
-    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    empleado = obtener_empleado_por_id(db, empleado_id)
     if empleado is None:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
 
@@ -61,7 +87,7 @@ def crear_empleado(empleado: EmpleadoCreate, db: Session = Depends(get_db)):
 @router.delete("/empleados/{empleado_id}")
 def eliminar_empleado(empleado_id: int, db: Session = Depends(get_db)):
 
-    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    empleado = obtener_empleado_por_id(db, empleado_id)
     if empleado is None:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
     db.delete(empleado)
@@ -73,7 +99,7 @@ def eliminar_empleado(empleado_id: int, db: Session = Depends(get_db)):
 def actualizar_empleado(
     empleado_id: int, empleado_update: EmpleadoUpdate, db: Session = Depends(get_db)
 ):
-    empleado = db.query(Empleado).filter(Empleado.id == empleado_id).first()
+    empleado = obtener_empleado_por_id(db, empleado_id)
     if empleado is None:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
     empleado.nombre = empleado_update.nombre
